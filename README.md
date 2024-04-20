@@ -11,7 +11,7 @@ Modulation mode: 2ASK, 4ASK, 8ASK (can be set), symbol rate: 10Kbit/s, carrier f
 Module:
 1. Binary pseudo-random number generator, rate 10kbit/s.
 2. rom with 200 LUT(look up table)
-
+3. lut.py is the script to generate sin look up atbel data.
    
   <img width="276" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/c5369be8-5cc5-42fa-b379-5011ebbdd03e">
 
