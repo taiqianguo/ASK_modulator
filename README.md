@@ -26,6 +26,9 @@ Module:
   
 6. signal ports: button1 S9, button0 S8, reset R10
 7. Operation method: After pressing reset, press the button twice in succession, press s9, s8 is 01, 2ask. Press s8, s9 is 10, 4ask. Press s9s9, it is 11, 8ask. Press s8, s8 is 00, no output, you need to press reset again before setting.
+8. dac out put as:
+   <img width="306" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/15beb3e9-c22a-4353-a8ec-c0a67cc68495">
+
 
 
 Details can be referred in the comment of the code.
