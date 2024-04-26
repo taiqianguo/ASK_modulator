@@ -13,7 +13,7 @@ module single_port_rom
 
 	initial
 	begin
-		$readmemb("db/sin.txt", rom);
+		$readmemb("../db/sin.txt", rom);
 	end
 
 	always @ (posedge clk)
@@ -50,30 +50,31 @@ module DDS(
 endmodule
 
 
-
 module RandomNumberGenerator(
     output reg [3:0] random_number, // 4-bit random number output
     input wire clk,                // Clock input 10
     input wire rst                 // Synchronous reset input
 );
-
+reg [31:0]long_random=32'hACE1;
 // Internal signal for feedback bit
 wire feedback;
 
 // Feedback
-assign feedback = (random_number[3] ^ random_number[2]);
+assign feedback = (long_random[31] ^ long_random[21]^ long_random[1]^ long_random[0]);
 
 // Sequential logic for the LFSR with synchronous reset
 always @(posedge clk) begin
     if (! rst) begin
-        random_number <= 4'b0001; // Non-zero initial value
+        long_random=32'hACE; // Non-zero initial value
     end else begin
         // Shift left by 1 bit and insert feedback into LSB
-        random_number <= {random_number[2:0], feedback};
+        long_random <= {long_random[30:0], feedback};
+		  random_number<=long_random[3:0];
     end
 end
 
 endmodule
+
 
 module data_converter ( //generate 10Kbit/s throughput and encode it to parallel and mudulate.
 	input wire [1:0]mixer_mode,//00 for stop mixer, 01 for 2ASK, 10 for 4ASK, 11 for 8ASK
@@ -84,10 +85,10 @@ module data_converter ( //generate 10Kbit/s throughput and encode it to parallel
 	output reg [15:0]dac_data
 	);
 	
-	reg  [2:0]parallel_data;
-	reg  temp1_data;
-	reg  temp2_data; //the temp data for the parallel data
-	reg [15:0]counter;// the counter for 10kbit/s data
+	reg  [2:0]parallel_data=0;
+	reg  temp1_data=0;
+	reg  temp2_data=0; //the temp data for the parallel data
+	reg [15:0]counter=0;// the counter for 10kbit/s data
 	
 	always @(posedge clk )
 	if(! rst) counter<=0;
