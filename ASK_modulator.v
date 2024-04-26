@@ -65,7 +65,7 @@ assign feedback = (long_random[31] ^ long_random[21]^ long_random[1]^ long_rando
 // Sequential logic for the LFSR with synchronous reset
 always @(posedge clk) begin
     if (! rst) begin
-        long_random=32'hACE; // Non-zero initial value
+        long_random=32'hACE1; // Non-zero initial value
     end else begin
         // Shift left by 1 bit and insert feedback into LSB
         long_random <= {long_random[30:0], feedback};
