@@ -41,13 +41,14 @@ simulation results:
 4ASK:
 
 
-<img width="292" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/b1827c7e-7ee7-4de6-a169-2f01e8b8b030">
-<img width="292" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/39fe3fb3-5b59-49d1-b8ca-f2b4e47681c1">
+<img width="2000" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/71f5a203-6d60-4a2c-9434-734828ca18d0">
 
+
+<img width="2000" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/8b4cbb07-7f5b-4ae5-99f3-14bc093fbfb4">
 
 
 8ASK:
 
 
-<img width="292" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/86ce12ec-85ff-42d9-826a-dbc840f3525f">
+<img width="2000" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/8ed85e92-2c15-4fcf-945c-5acd48ffe6eb">
 
