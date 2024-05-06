@@ -1,5 +1,4 @@
 
-
 module single_port_rom
 #(parameter DATA_WIDTH=8, parameter ADDR_WIDTH=8)//data width == DAC output width 
 (															//for 1Mhz carrier frequency accuracy we only use 0-199 address.
@@ -50,10 +49,13 @@ module DDS(
 endmodule
 
 
-module RandomNumberGenerator(
+
+
+module RandomGenerator(
     output reg [3:0] random_number, // 4-bit random number output
     input wire clk,                // Clock input 10
-    input wire rst                 // Synchronous reset input
+    input wire rst,                 // Synchronous reset input
+	 input wire data_mode				// mode 0 by default after reset is random output, mode 1 is 
 );
 reg [31:0]long_random=32'hACE1;
 // Internal signal for feedback bit
@@ -65,7 +67,7 @@ assign feedback = (long_random[31] ^ long_random[21]^ long_random[1]^ long_rando
 // Sequential logic for the LFSR with synchronous reset
 always @(posedge clk) begin
     if (! rst) begin
-        long_random=32'hACE1; // Non-zero initial value
+        long_random=32'hACE; // Non-zero initial value
     end else begin
         // Shift left by 1 bit and insert feedback into LSB
         long_random <= {long_random[30:0], feedback};
@@ -75,8 +77,9 @@ end
 
 endmodule
 
-
-module data_converter ( //generate 10Kbit/s throughput and encode it to parallel and mudulate.
+module data_converter ( 
+	input wire input_mode,
+	input wire [2:0]button_data_in,//generate 10Kbit/s throughput and encode it to parallel and mudulate.
 	input wire [1:0]mixer_mode,//00 for stop mixer, 01 for 2ASK, 10 for 4ASK, 11 for 8ASK
 	input wire data_in, //one bit data input
 	input wire clk,
@@ -92,8 +95,8 @@ module data_converter ( //generate 10Kbit/s throughput and encode it to parallel
 	
 	always @(posedge clk )
 	if(! rst) counter<=0;
-	else
-	case(mixer_mode)
+	else if(input_mode==0)
+		case(mixer_mode)
 		2'b00,
 		2'b01:begin
 					if(counter==5000)
@@ -158,7 +161,9 @@ module data_converter ( //generate 10Kbit/s throughput and encode it to parallel
 						end
 				end
 	endcase			
-				
+	else parallel_data<=button_data_in;
+
+	
 	always @(posedge clk)
 		case(mixer_mode)
 			2'b00:dac_data<=0;
@@ -173,16 +178,140 @@ module ASK_modulator(
 	input wire rst,
 	input wire button0,// 
 	input wire button1,//after reset , press button twice to determine the mixer_mode
+	
+	input wire switch_button,// default to 0 is random generator mode, presss once to button input mode 1, press again retun to mode 0
+	input wire button2,button3,// button2 represent number 0, button3 represent number 1, first set mix mode, then press button continously to set the input .
 	output wire  clk_dac,
 	output reg [7:0]data_out	);	
 	
 	assign clk_dac=clk;
+	reg [1:0]mix_mode;
 	
+	//input mode and input data control
+	
+	reg input_mode=0;
+	reg [3:0]temp_switch_button;
+	
+	
+	always @ (posedge clk)
+	begin
+	temp_switch_button<={temp_switch_button[2:0],switch_button};
+	if (!rst)
+		begin
+		input_mode<=0;
+		end
+	else if (input_mode==0)
+		if(! temp_switch_button[3] & temp_switch_button[2])
+			input_mode<=1;
+		else input_mode<=input_mode;
+	else 
+		if(! temp_switch_button[3] & temp_switch_button[2])
+			input_mode<=0;
+		else input_mode<=input_mode;
+	
+	end
+	
+	reg [3:0]temp_button2;
+	reg [3:0]temp_button3;
+	
+	reg [2:0]temp_input_data;
+	reg [2:0]input_data;
+	reg [1:0]bit_state;// indicate the current input is which bit
+	
+	always @(posedge clk)
+	
+	begin 
+		temp_button2<={temp_button2[2:0],button2};
+		temp_button3<={temp_button3[2:0],button3};
+		if (!rst)
+			begin
+			input_data<=0;
+			bit_state<=0;
+			end
+			
+		else if((bit_state)==mix_mode)// the input bit is euqal to mix mode
+			begin
+			bit_state<=0;
+			input_data<=temp_input_data;
+			end
+		
+		else if(! temp_button2[3] & temp_button2[2]) // input 0 trigger
+			case({mix_mode,bit_state})
+			4'b0100: begin
+						temp_input_data[0]<=0;
+						bit_state<=bit_state+1;
+						end
+			4'b1000: begin
+						temp_input_data[0]<=0;
+						bit_state<=bit_state+1;
+						end
+			4'b1001: begin
+						temp_input_data[1]<=0;
+						bit_state<=bit_state+1;
+						end
+			4'b1100:	begin
+						temp_input_data[0]<=0;
+						bit_state<=bit_state+1;
+						end
+			4'b1101:	begin
+						temp_input_data[1]<=0;
+						bit_state<=bit_state+1;
+						end
+			4'b1110:	begin
+						temp_input_data[2]<=0;
+						bit_state<=bit_state+1;
+						end
+		   default: begin
+						temp_input_data<=temp_input_data;
+						bit_state<=0;
+						end
+			endcase
+		else if(! temp_button3[3] & temp_button3[2]) // input 1 trigger
+			case({mix_mode,bit_state})
+			4'b0100: begin
+						temp_input_data[0]<=1;
+						bit_state<=bit_state+1;
+						end
+			4'b1000: begin
+						temp_input_data[0]<=1;
+						bit_state<=bit_state+1;
+						end
+			4'b1001: begin
+						temp_input_data[1]<=1;
+						bit_state<=bit_state+1;
+						end
+			4'b1100:	begin
+						temp_input_data[0]<=1;
+						bit_state<=bit_state+1;
+						end
+			4'b1101:	begin
+						temp_input_data[1]<=1;
+						bit_state<=bit_state+1;
+						end
+			4'b1110:	begin
+						temp_input_data[2]<=1;
+						bit_state<=bit_state+1;
+						end
+		   default: begin
+						temp_input_data<=temp_input_data;
+						bit_state<=0;
+						end
+			endcase
+		else 
+			begin
+			temp_input_data<=temp_input_data;
+			bit_state<=bit_state;
+			end			
+						
+	end
+						
+						
    wire serials_data;
 	wire [3:0]random_data;
 	assign serials_data=random_data[0];
 	
-	RandomNumberGenerator rg0(
+	
+	RandomGenerator rg0(
 	.clk(clk),
 	.random_number(random_data),
 	.rst(rst)); 
@@ -197,9 +326,9 @@ module ASK_modulator(
 	);
 	
 	reg [1:0]mode=0	;
-	reg [1:0]press_state;//a simpel state machine, 0 indicate no transfer 
-	reg [3:0]temp_button0;
-	reg [3:0]temp_button1;
+	reg [1:0]press_state=0;//a simpel state machine, 0 indicate no transfer 
+	reg [3:0]temp_button0=0;
+	reg [3:0]temp_button1=0;
 	
 	always@(posedge clk) //button press sync  module and prevent unstable shaking
 	begin	
@@ -252,17 +381,16 @@ module ASK_modulator(
 			end	
 	end			
 	
-	reg [1:0]mode_out;
 	
 	
 	always @( posedge clk) // this  prevent intermediate value of mode
 		begin
 		if (! rst)
-			mode_out<=0;
+			mix_mode<=0;
 		else if (press_state==2)
-			mode_out<=mode;
+			mix_mode<=mode;
 		else
-			mode_out<=mode_out;
+			mix_mode<=mix_mode;
 		end	
 	
 	
@@ -270,9 +398,11 @@ module ASK_modulator(
 	data_converter dc0(
 	.clk(clk),
 	.rst(rst),
+	.input_mode(input_mode),
+	.button_data_in(input_data),
 	.data_in(serials_data),
 	.sin_in(sin),
-	.mixer_mode(mode_out),
+	.mixer_mode(mix_mode),
 	.dac_data(data_5v)
 	);
 	
