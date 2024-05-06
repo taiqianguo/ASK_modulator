@@ -56,5 +56,5 @@ simulation results:
 button switch mode:
 
 
-<img width="2000" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/3e402867-c8e8-4ff4-8822-5d40ffa34c6f">
-<img width="2000" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/a3ee89a8-13a3-4d34-a5e9-f97553ef8468">
+<img width="1000" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/3e402867-c8e8-4ff4-8822-5d40ffa34c6f">
+<img width="1000" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/a3ee89a8-13a3-4d34-a5e9-f97553ef8468">
