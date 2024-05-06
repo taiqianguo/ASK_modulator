@@ -26,7 +26,8 @@ Module:
   
 6. signal ports: button1 S9, button0 S8, reset R10
 7. Operation method: After pressing reset, press the button twice in succession, press s9, s8 is 01, 2ask. Press s8, s9 is 10, 4ask. Press s9s9, it is 11, 8ask. Press s8, s8 is 00, no output, you need to press reset again before setting.
-8. dac out put as:
+8. Three buttons have been added. One is to switch the input mode. Press once to switch to key input, and press again to switch to random input. Then during key input, pressing button2 is 0, pressing button3 is 1, and the output is based on the ask mode. For example, in 4ASK mode, pressing button2/3 twice will output one value, and pressing button2/3 twice will output another value.
+9. dac out put as:
 
    
    <img width="306" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/15beb3e9-c22a-4353-a8ec-c0a67cc68495">
@@ -52,3 +53,8 @@ simulation results:
 
 <img width="2000" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/8ed85e92-2c15-4fcf-945c-5acd48ffe6eb">
 
+button switch mode:
+
+
+<img width="2000" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/3e402867-c8e8-4ff4-8822-5d40ffa34c6f">
+<img width="2000" alt="image" src="https://github.com/taiqianguo/ASK_modulator/assets/58079218/a3ee89a8-13a3-4d34-a5e9-f97553ef8468">
